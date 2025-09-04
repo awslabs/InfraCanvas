@@ -24,7 +24,7 @@ c.	If a group is wholly contained within another group or boundary, it's conside
     Apart from the XML file here is an additional information regarding the architecture file given by the user.
     Information:- {textinput}
 
-Do not show your analysis, only respond back with teh questions.
+Do not show your analysis, only respond back with the questions.
 '''
 
 
