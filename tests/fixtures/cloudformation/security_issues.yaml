@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template with security issues
+
+Resources:
+  # Unencrypted S3 bucket
+  UnencryptedBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: unencrypted-test-bucket
+      # Missing encryption configuration
+      # Missing public access block
+
+  # Overly permissive IAM role
+  OverlyPermissiveRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess  # Too permissive
+      Policies:
+        - PolicyName: WildcardPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: '*'  # Wildcard action
+                Resource: '*'  # Wildcard resource
+
+  # Security group with open ingress
+  OpenSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group with open access
+      VpcId: vpc-12345678
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0  # Open to the world
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 0.0.0.0/0  # RDP open to the world
+
+  # RDS instance without encryption
+  UnencryptedDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: test-db
+      Engine: mysql
+      MasterUsername: admin
+      MasterUserPassword: PlainTextPassword123!  # Hardcoded password
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 20
+      # Missing StorageEncrypted: true
+      PubliclyAccessible: true  # Publicly accessible database

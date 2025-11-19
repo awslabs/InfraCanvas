@@ -1,0 +1,31 @@
+# Python
+*/__pycache__/*
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.kiro/
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# Temporary files
+*.log
+*.tmp
+.DS_Store

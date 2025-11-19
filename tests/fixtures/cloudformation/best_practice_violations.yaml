@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template with best practice violations
+
+Resources:
+  # Missing tags
+  UntaggedBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: untagged-bucket
+      # Missing tags for resource management
+
+  # Poor naming convention
+  bucket1:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: mybucket  # Non-descriptive name
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  # Missing description
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      # Missing GroupDescription (required but poor practice if generic)
+      GroupDescription: sg
+      VpcId: vpc-12345678
+
+  # Hardcoded values instead of parameters
+  HardcodedInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-0c55b159cbfafe1f0  # Hardcoded AMI
+      InstanceType: t2.micro
+      SubnetId: subnet-12345678  # Hardcoded subnet
+      AvailabilityZone: us-east-1a  # Hardcoded AZ
+
+  # Missing DeletionPolicy
+  ImportantDatabase:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: important-db
+      Engine: postgres
+      MasterUsername: admin
+      MasterUserPassword: !Ref DBPassword
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: 100
+      StorageEncrypted: true
+      # Missing DeletionPolicy: Retain for important data
+
+Parameters:
+  DBPassword:
+    Type: String
+    NoEcho: true
+    # Missing description and constraints
+
+Outputs:
+  # Missing export names for cross-stack references
+  BucketName:
+    Value: !Ref bucket1
+    # Missing Export for reusability

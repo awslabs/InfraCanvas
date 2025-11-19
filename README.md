@@ -14,7 +14,7 @@ It is a tool that is used to generate CloudFormation/CDK/Terraform code from arc
 - Python
 - AWS account
 - AWS user role with access to Bedrock APIs
-- Access to Bedrock model Claude Sonnet 3.7 in your AWS account
+- Access to Bedrock model Claude Sonnet 4.5 in your AWS account
 
 ## AWS Authentication Best Practices
 
@@ -408,3 +408,253 @@ To locally run the code you must have python installed in your system as a prere
 -   Run `source .venv/bin/activate`
 -   Install dependencies `pip install -r requirements.txt`
 -   For running the code use `streamlit run app.py`
+
+## Automated IaC Validation with Amazon Q Developer
+
+InfraCanvas uses **Amazon Q Developer** for AI-powered validation of generated infrastructure code. This provides intelligent, context-aware analysis that goes beyond traditional linting tools to ensure your code is syntactically correct, secure, follows best practices, and is deployment-ready.
+
+### Why Amazon Q Developer?
+
+Amazon Q Developer provides comprehensive validation through advanced AI analysis:
+
+- **Intelligent Code Understanding**: Understands the intent and context of your infrastructure
+- **Multi-Dimensional Analysis**: Simultaneously checks syntax, security, best practices, and deployment readiness
+- **Natural Language Explanations**: Provides clear, actionable remediation guidance
+- **AWS Expertise**: Built-in knowledge of AWS services, Well-Architected Framework, and security best practices
+- **Logical Consistency**: Detects issues that pattern-matching tools might miss
+
+### Validation Capabilities
+
+Amazon Q Developer performs comprehensive analysis across four key areas:
+
+#### 1. Syntax and Structure Validation (30% of readiness score)
+AI-powered analysis of code syntax and structural integrity:
+
+**All IaC Formats:**
+- Syntax error detection with precise location identification
+- Malformed resource definitions
+- Invalid property names and values
+- Structural issues and formatting problems
+- Missing required fields or parameters
+- Type mismatches and invalid references
+
+**CloudFormation:**
+- YAML/JSON syntax validation
+- Resource type and property validation
+- Template structure compliance
+- Parameter and output definitions
+
+**Terraform:**
+- HCL syntax validation
+- Provider and resource block structure
+- Variable and output declarations
+- Module configuration
+
+**AWS CDK:**
+- Language-specific syntax (Python, TypeScript, Java)
+- Construct usage and composition
+- Import and dependency validation
+
+#### 2. Security Analysis (30% of readiness score)
+Comprehensive security vulnerability detection and compliance checking:
+
+**Security Issues Detected:**
+- **Encryption**: Unencrypted resources (S3 buckets, EBS volumes, RDS databases, etc.)
+- **Access Control**: Overly permissive IAM policies, security groups allowing 0.0.0.0/0
+- **Public Exposure**: Resources with unintended public access
+- **Secrets Management**: Hardcoded credentials, API keys, or sensitive data
+- **Network Security**: Missing VPC configurations, insecure network rules
+- **Logging and Monitoring**: Missing CloudWatch logs, CloudTrail, or audit configurations
+- **Compliance**: CIS, PCI-DSS, HIPAA, and SOC 2 compliance checks
+
+**AI-Powered Security Features:**
+- Context-aware threat detection
+- Understanding of resource relationships and attack vectors
+- Intelligent risk assessment based on resource purpose
+- Recommendations for defense-in-depth strategies
+
+#### 3. Best Practices Validation (20% of readiness score)
+AWS Well-Architected Framework compliance and industry best practices:
+
+**Operational Excellence:**
+- Infrastructure as Code best practices
+- Resource tagging for organization and cost allocation
+- Naming conventions and documentation
+- Change management and version control
+
+**Reliability:**
+- Multi-AZ deployments for high availability
+- Backup and disaster recovery configurations
+- Auto-scaling and fault tolerance
+- Health checks and monitoring
+
+**Performance Efficiency:**
+- Appropriate instance types and sizing
+- Storage optimization
+- Network performance considerations
+- Caching strategies
+
+**Cost Optimization:**
+- Right-sizing recommendations
+- Reserved capacity opportunities
+- Unused resource detection
+- Cost-effective service alternatives
+
+**Sustainability:**
+- Resource efficiency
+- Idle resource identification
+- Optimization opportunities
+
+#### 4. Deployment Readiness (20% of readiness score)
+Validation that code can be successfully deployed to AWS:
+
+**Deployment Checks:**
+- Missing required parameters or variables
+- Invalid resource references and dependencies
+- Circular dependency detection
+- Resource naming conflicts
+- Service quota and limit considerations
+- Region-specific resource availability
+- IAM permission requirements
+- Cross-resource compatibility
+
+### Deployment Readiness Scoring
+
+After validation completes, InfraCanvas calculates a deployment readiness score (0-100) based on the weighted categories above. The score determines deployment status:
+
+- **Ready (80-100)**: Code is production-ready with no critical issues
+- **Ready with Warnings (60-79)**: Code can be deployed but has warnings that should be addressed
+- **Not Ready (<60)**: Code has critical issues that must be fixed before deployment
+
+**Blocking Issues:**
+- Critical syntax errors prevent code from being parsed
+- Critical security vulnerabilities (unencrypted data, public access)
+- Deployment validation failures (invalid templates, missing resources)
+
+### Prerequisites for Q Developer Validation
+
+Amazon Q Developer validation requires:
+
+1. **AWS Credentials**: Configured AWS credentials with access to Amazon Bedrock
+2. **Bedrock Access**: Permission to invoke Bedrock models (Claude Sonnet 4.5)
+3. **Python Dependencies**: boto3 library for AWS API access
+
+#### Installation
+
+Install InfraCanvas dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+This installs:
+- `boto3>=1.38.0` - AWS SDK for Amazon Bedrock integration
+- `streamlit>=1.28.0` - Web UI framework
+
+#### Required IAM Permissions
+
+Your AWS role/user needs these permissions for Q Developer validation:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "bedrock:InvokeModel"
+            ],
+            "Resource": "arn:aws:bedrock:*:*:foundation-model/anthropic.claude-sonnet-4*"
+        }
+    ]
+}
+```
+
+### Using the Validation System
+
+#### Automatic Validation
+
+Validation runs automatically after code generation:
+
+1. Upload your architecture diagram and provide inputs
+2. InfraCanvas generates IaC code using Amazon Bedrock
+3. Amazon Q Developer automatically analyzes the generated code
+4. AI-powered validation results appear in the UI with a deployment readiness score and detailed findings
+
+#### Validation Results Display
+
+The validation panel shows:
+
+- **Deployment Readiness Gauge**: Visual indicator (red/yellow/green) with overall score
+- **Category Breakdown**: Individual scores for syntax, security, best practices, and deployment
+- **Issue Tables**: Expandable sections for each category showing:
+  - Severity level (Critical, High, Medium, Low, Info)
+  - Issue description and affected resource
+  - Line number (when available)
+  - Remediation guidance
+  - Rule ID for reference
+
+#### Downloading Reports
+
+Export validation results for documentation or sharing:
+
+- **JSON Format**: Machine-readable format for CI/CD integration
+- **HTML Format**: Formatted report with styling for human review
+
+Click the download buttons in the validation panel to export reports.
+
+### Configuration Options
+
+Customize validation behavior through the UI sidebar:
+
+- **Enable/Disable Categories**: Toggle syntax, security, best practices, or deployment validation
+- **Security Thresholds**: Set maximum allowed critical/high security issues
+- **Automatic Validation**: Enable/disable automatic validation after code generation
+- **Skip Specific Checks**: Configure which Checkov or CFN-Lint rules to ignore
+
+Configuration can also be managed via `config.yaml` file:
+
+```yaml
+validation:
+  enabled: true
+  timeout_seconds: 120
+  
+  syntax:
+    enabled: true
+  
+  security:
+    enabled: true
+    max_critical_issues: 0
+    max_high_issues: 3
+    checkov_skip_checks:
+      - CKV_AWS_1  # Example: Skip specific check
+  
+  best_practices:
+    enabled: true
+  
+  dry_run:
+    enabled: true
+    aws_region: us-east-1
+```
+
+### Troubleshooting Validation
+
+**Validation Timeout**
+- Default timeout is 120 seconds for all validators
+- Individual validators timeout after 60 seconds
+- Increase timeout in configuration if needed for large templates
+
+**AWS Credentials for Q Developer**
+- Q Developer validation requires AWS credentials with Bedrock access
+- Configure using `aws configure` or environment variables
+- Missing credentials will prevent validation from running
+
+**Q Developer Response Issues**
+- If validation fails, check AWS credentials and Bedrock model access
+- Ensure you have permission to invoke the Claude Sonnet 4.5 model
+- Check CloudWatch Logs for detailed error messages
+
+**False Positives**
+- Use skip checks configuration to ignore specific rules
+- Document why checks are skipped for audit purposes
+- Consider if the issue represents a real security risk before skipping

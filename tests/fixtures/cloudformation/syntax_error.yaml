@@ -1,0 +1,30 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template with syntax errors
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: test-bucket
+      # Missing required property structure
+      InvalidProperty: !Ref NonExistentResource
+      
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      # Missing required ImageId property
+      InstanceType: t2.micro
+      # Invalid reference
+      SecurityGroups:
+        - !Ref UndefinedSecurityGroup
+
+  # Invalid resource type
+  InvalidResource:
+    Type: AWS::Invalid::ResourceType
+    Properties:
+      SomeProperty: value
+
+Outputs:
+  # Reference to non-existent resource
+  BucketArn:
+    Value: !GetAtt NonExistentBucket.Arn
