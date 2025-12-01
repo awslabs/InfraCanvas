@@ -5,6 +5,7 @@ import json
 import time
 import sys
 import logging
+import re
 from datetime import datetime
 from io import StringIO
 
@@ -195,18 +196,20 @@ def get_bedrock_response_stream(
 
 
 def stream_code_display(iac_format, response_stream):
-    # Create containers for code display
+    import re
+    
+    # Create containers for display
     header_container = st.empty()
     progress_container = st.empty()
-    code_container = st.empty()
+    content_container = st.empty()
     status_container = st.empty()
 
     # Initialize progress bar
     progress_bar = progress_container.progress(0)
     progress = 0
 
-    # Initialize code accumulator
-    full_code = ""
+    # Initialize response accumulator
+    full_response = ""
 
     # Display initial header
     header_container.markdown(f"### Generated {iac_format} Code")
@@ -220,34 +223,56 @@ def stream_code_display(iac_format, response_stream):
                 if "delta" in chunk and "text" in chunk["delta"]:
                     chunk_text = chunk["delta"]["text"]
                     if chunk_text:
-                        # Accumulate code
-                        full_code += chunk_text
-
-                        # Update the display with syntax highlighting
-                        language = IAC_FORMATS.get(iac_format)
-                        code_container.code(full_code + "▌", language=language)
+                        # Accumulate response
+                        full_response += chunk_text
 
                         # Update progress
                         progress = min(progress + 2, 99)
                         progress_bar.progress(progress)
 
-                        # Small delay to make the streaming visible (intentional for UX)
+                        # Small delay to make the streaming visible
                         time.sleep(0.01)  # noqa: arbitrary-sleep
 
         # Final updates
         progress_bar.progress(100)
         status_container.markdown("*Code generation complete ✓*")
-        code_container.code(full_code, language=IAC_FORMATS.get(iac_format))
-
-        # Add download button after code generation
-        st.download_button(
-            label="📥 Download Code",
-            data=full_code,
-            file_name=f"infrastructure.{IAC_FORMATS.get(iac_format)}",
-            mime="text/plain",
-        )
-
-        return full_code
+        progress_container.empty()
+        
+        # Extract code from markdown code blocks
+        code_pattern = r'```(?:\w+)?\s*\n(.*?)\n```'
+        code_matches = re.findall(code_pattern, full_response, re.DOTALL)
+        
+        if code_matches:
+            # Extract the actual code (first code block)
+            extracted_code = code_matches[0].strip()
+            
+            # Split response into parts: before code, code, after code
+            parts = re.split(code_pattern, full_response, maxsplit=1, flags=re.DOTALL)
+            
+            # Render markdown content before code
+            if parts[0].strip():
+                st.markdown(parts[0].strip())
+            
+            # Display code with syntax highlighting
+            st.code(extracted_code, language=IAC_FORMATS.get(iac_format))
+            
+            # Render markdown content after code (if any)
+            if len(parts) > 2 and parts[2].strip():
+                st.markdown(parts[2].strip())
+            
+            # Add download button
+            st.download_button(
+                label="📥 Download Code",
+                data=extracted_code,
+                file_name=f"infrastructure.{IAC_FORMATS.get(iac_format)}",
+                mime="text/plain",
+            )
+            
+            return extracted_code
+        else:
+            # No code blocks found, render as markdown
+            st.markdown(full_response)
+            return full_response
 
     except Exception as e:
         status_container.error(f"Error during code generation: {str(e)}")
@@ -523,16 +548,16 @@ def main():
                 st.session_state.questions = generate_questions(
                     uploaded_file, st.session_state.context_history, text_input
                 )
-    
-    # Render validation settings in sidebar
-    render_validation_settings()
 
     # Question and response handling
     if st.session_state.questions:
-        with st.sidebar.expander("Answer Questions"):
+        with st.sidebar.expander("Answer Questions", expanded=True):
             submit, responses, iac_format, additional_notes = create_response_form(
                 st.session_state.questions
             )
+        
+        # Render validation settings in sidebar after questions
+        render_validation_settings()
 
         if submit:
             st.sidebar.success("Responses submitted!")
