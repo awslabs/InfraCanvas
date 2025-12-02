@@ -1,0 +1,32 @@
+# InfraCanvas Validation Configuration
+# Copy this file to config.yaml and customize as needed
+
+validation:
+  enabled: true
+  timeout_seconds: 120
+  
+  syntax:
+    enabled: true
+  
+  security:
+    enabled: true
+    max_critical_issues: 0
+    max_high_issues: 3
+    checkov_skip_checks:
+      # Example: Skip specific Checkov checks
+      # - CKV_AWS_1
+      # - CKV_AWS_2
+  
+  best_practices:
+    enabled: true
+  
+  dry_run:
+    enabled: true
+    aws_region: us-east-1
+    use_aws_validation: true
+  
+  cfn_lint:
+    ignore_checks:
+      # Example: Ignore specific CFN-Lint rules
+      # - W3002
+      # - E3012
