@@ -78,32 +78,32 @@ class ValidationOrchestrator:
         self._initialize_validators()
     
     def _initialize_validators(self):
-        """Initialize format-specific validators using Amazon Q Developer."""
-        from validators.q_developer import QDeveloperValidator
+        """Initialize format-specific validators using Amazon Bedrock."""
+        from validators.bedrock_validator import BedrockValidator
         
-        # Use Q Developer for all IaC formats
-        # Q Developer provides comprehensive validation including:
+        # Use Bedrock for all IaC formats
+        # Bedrock provides comprehensive validation including:
         # - Syntax and structure analysis
         # - Security scanning
         # - Best practices validation
         # - Deployment readiness checks
         
         cloudformation_validators = [
-            QDeveloperValidator(
+            BedrockValidator(
                 iac_format='cloudformation',
                 region=self.config.aws_region
             )
         ]
         
         terraform_validators = [
-            QDeveloperValidator(
+            BedrockValidator(
                 iac_format='terraform',
                 region=self.config.aws_region
             )
         ]
         
         cdk_validators = [
-            QDeveloperValidator(
+            BedrockValidator(
                 iac_format='cdk',
                 region=self.config.aws_region
             )

@@ -1,5 +1,5 @@
 """
-Amazon Q Developer validator for AI-powered IaC code validation.
+Amazon Bedrock validator for AI-powered IaC code validation.
 """
 import json
 import time
@@ -18,9 +18,9 @@ from validators.base import BaseValidator, ValidationResult, ValidationIssue, Se
 logger = logging.getLogger(__name__)
 
 
-class QDeveloperValidator(BaseValidator):
+class BedrockValidator(BaseValidator):
     """
-    Validates IaC code using Amazon Q Developer via Bedrock.
+    Validates IaC code using Amazon Bedrock with Claude AI.
     
     Provides AI-powered validation including:
     - Syntax and structural analysis
@@ -38,7 +38,7 @@ class QDeveloperValidator(BaseValidator):
         boto_session: Optional[object] = None
     ):
         """
-        Initialize Q Developer validator.
+        Initialize Bedrock validator.
         
         Args:
             iac_format: The IaC format (cloudformation, terraform, cdk)
@@ -54,7 +54,7 @@ class QDeveloperValidator(BaseValidator):
     
     def get_name(self) -> str:
         """Return validator name."""
-        return f"Amazon Q Developer Validator ({self.iac_format.upper()})"
+        return f"Amazon Bedrock Validator ({self.iac_format.upper()})"
     
     def is_available(self) -> bool:
         """Check if boto3 is available and AWS credentials are configured."""
@@ -70,11 +70,11 @@ class QDeveloperValidator(BaseValidator):
     
     def validate(self, code: str, temp_dir: str) -> ValidationResult:
         """
-        Validate IaC code using Amazon Q Developer.
+        Validate IaC code using Amazon Bedrock.
         
         Args:
             code: The IaC code to validate
-            temp_dir: Temporary directory (not used for Q Developer)
+            temp_dir: Temporary directory (not used for Bedrock validation)
             
         Returns:
             ValidationResult with AI-powered validation findings
@@ -86,7 +86,7 @@ class QDeveloperValidator(BaseValidator):
             issues.append(ValidationIssue(
                 severity=Severity.HIGH,
                 category="deployment",
-                message="boto3 library not available for Q Developer validation",
+                message="boto3 library not available for Bedrock validation",
                 remediation="Install boto3: pip install boto3"
             ))
             execution_time = time.time() - start_time
@@ -95,7 +95,7 @@ class QDeveloperValidator(BaseValidator):
                 passed=False,
                 issues=issues,
                 execution_time=execution_time,
-                metadata={"tool": "q-developer", "boto3_available": False}
+                metadata={"tool": "bedrock", "boto3_available": False}
             )
         
         try:
@@ -121,7 +121,7 @@ class QDeveloperValidator(BaseValidator):
                 issues.insert(0, ValidationIssue(
                     severity=Severity.INFO,
                     category="deployment",
-                    message="Amazon Q Developer validation completed successfully",
+                    message="Amazon Bedrock validation completed successfully",
                     remediation=None
                 ))
         
@@ -140,17 +140,17 @@ class QDeveloperValidator(BaseValidator):
             issues.append(ValidationIssue(
                 severity=Severity.HIGH,
                 category="deployment",
-                message=f"Q Developer validation failed: {error_message}",
+                message=f"Bedrock validation failed: {error_message}",
                 remediation="Check AWS credentials and Bedrock model access permissions",
                 rule_id=error_code
             ))
         
         except Exception as e:
-            logger.error(f"Unexpected error during Q Developer validation: {e}", exc_info=True)
+            logger.error(f"Unexpected error during Bedrock validation: {e}", exc_info=True)
             issues.append(ValidationIssue(
                 severity=Severity.HIGH,
                 category="deployment",
-                message=f"Unexpected error during Q Developer validation: {str(e)}",
+                message=f"Unexpected error during Bedrock validation: {str(e)}",
                 remediation="Check AWS configuration and network connectivity"
             ))
         
@@ -163,7 +163,7 @@ class QDeveloperValidator(BaseValidator):
             issues=issues,
             execution_time=execution_time,
             metadata={
-                "tool": "q-developer",
+                "tool": "bedrock",
                 "model_id": self.model_id,
                 "iac_format": self.iac_format
             }
@@ -171,7 +171,7 @@ class QDeveloperValidator(BaseValidator):
     
     def _create_validation_prompt(self, code: str) -> str:
         """
-        Create validation prompt for Q Developer.
+        Create validation prompt for Bedrock.
         
         Args:
             code: The IaC code to validate
@@ -280,7 +280,7 @@ Return ONLY the JSON response, no additional text."""
     
     def _parse_validation_response(self, response: str) -> List[ValidationIssue]:
         """
-        Parse Q Developer validation response into ValidationIssue objects.
+        Parse Bedrock validation response into ValidationIssue objects.
         
         Args:
             response: JSON response from the model
@@ -328,26 +328,26 @@ Return ONLY the JSON response, no additional text."""
             
             # Log summary if available
             if 'summary' in validation_data:
-                logger.info(f"Q Developer Summary: {validation_data['summary']}")
+                logger.info(f"Bedrock Validation Summary: {validation_data['summary']}")
         
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse Q Developer response as JSON: {e}")
+            logger.error(f"Failed to parse Bedrock response as JSON: {e}")
             logger.debug(f"Response content: {response[:500]}")
             
             # Create fallback issue
             issues.append(ValidationIssue(
                 severity=Severity.MEDIUM,
                 category="deployment",
-                message="Q Developer validation completed but response format was unexpected",
+                message="Bedrock validation completed but response format was unexpected",
                 remediation="Check validation logs for details"
             ))
         
         except Exception as e:
-            logger.error(f"Error parsing Q Developer response: {e}")
+            logger.error(f"Error parsing Bedrock response: {e}")
             issues.append(ValidationIssue(
                 severity=Severity.MEDIUM,
                 category="deployment",
-                message=f"Error parsing Q Developer response: {str(e)}",
+                message=f"Error parsing Bedrock response: {str(e)}",
                 remediation="Check validation configuration"
             ))
         

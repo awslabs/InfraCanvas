@@ -409,13 +409,13 @@ To locally run the code you must have python installed in your system as a prere
 -   Install dependencies `pip install -r requirements.txt`
 -   For running the code use `streamlit run app.py`
 
-## Automated IaC Validation with Amazon Q Developer
+## Automated IaC Validation with Amazon Bedrock
 
-InfraCanvas uses **Amazon Q Developer** for AI-powered validation of generated infrastructure code. This provides intelligent, context-aware analysis that goes beyond traditional linting tools to ensure your code is syntactically correct, secure, follows best practices, and is deployment-ready.
+InfraCanvas uses **Amazon Bedrock with Claude AI** for AI-powered validation of generated infrastructure code. This provides intelligent, context-aware analysis that goes beyond traditional linting tools to ensure your code is syntactically correct, secure, follows best practices, and is deployment-ready.
 
-### Why Amazon Q Developer?
+### Why Amazon Bedrock?
 
-Amazon Q Developer provides comprehensive validation through advanced AI analysis:
+Amazon Bedrock provides comprehensive validation through advanced AI analysis:
 
 - **Intelligent Code Understanding**: Understands the intent and context of your infrastructure
 - **Multi-Dimensional Analysis**: Simultaneously checks syntax, security, best practices, and deployment readiness
@@ -425,7 +425,7 @@ Amazon Q Developer provides comprehensive validation through advanced AI analysi
 
 ### Validation Capabilities
 
-Amazon Q Developer performs comprehensive analysis across four key areas:
+Amazon Bedrock performs comprehensive analysis across four key areas:
 
 #### 1. Syntax and Structure Validation (30% of readiness score)
 AI-powered analysis of code syntax and structural integrity:
@@ -531,9 +531,9 @@ After validation completes, InfraCanvas calculates a deployment readiness score 
 - Critical security vulnerabilities (unencrypted data, public access)
 - Deployment validation failures (invalid templates, missing resources)
 
-### Prerequisites for Q Developer Validation
+### Prerequisites for Bedrock Validation
 
-Amazon Q Developer validation requires:
+Amazon Bedrock validation requires:
 
 1. **AWS Credentials**: Configured AWS credentials with access to Amazon Bedrock
 2. **Bedrock Access**: Permission to invoke Bedrock models (Claude Sonnet 4.5)
@@ -553,7 +553,7 @@ This installs:
 
 #### Required IAM Permissions
 
-Your AWS role/user needs these permissions for Q Developer validation:
+Your AWS role/user needs these permissions for Bedrock validation:
 
 ```json
 {
@@ -578,7 +578,7 @@ Validation runs automatically after code generation:
 
 1. Upload your architecture diagram and provide inputs
 2. InfraCanvas generates IaC code using Amazon Bedrock
-3. Amazon Q Developer automatically analyzes the generated code
+3. Amazon Bedrock automatically analyzes the generated code
 4. AI-powered validation results appear in the UI with a deployment readiness score and detailed findings
 
 #### Validation Results Display
@@ -644,12 +644,12 @@ validation:
 - Individual validators timeout after 60 seconds
 - Increase timeout in configuration if needed for large templates
 
-**AWS Credentials for Q Developer**
-- Q Developer validation requires AWS credentials with Bedrock access
+**AWS Credentials for Bedrock**
+- Bedrock validation requires AWS credentials with Bedrock access
 - Configure using `aws configure` or environment variables
 - Missing credentials will prevent validation from running
 
-**Q Developer Response Issues**
+**Bedrock Response Issues**
 - If validation fails, check AWS credentials and Bedrock model access
 - Ensure you have permission to invoke the Claude Sonnet 4.5 model
 - Check CloudWatch Logs for detailed error messages
