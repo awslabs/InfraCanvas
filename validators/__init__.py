@@ -1,7 +1,7 @@
 """
 IaC Validation System for InfraCanvas.
 
-This package provides AI-powered validation using Amazon Q Developer
+This package provides AI-powered validation using Amazon Bedrock
 for CloudFormation, Terraform, and AWS CDK formats.
 """
 from validators.base import (
@@ -15,7 +15,7 @@ from validators.base import (
 )
 from validators.orchestrator import ValidationOrchestrator
 from validators.report import ReportGenerator
-from validators.q_developer import QDeveloperValidator
+from validators.bedrock_validator import BedrockValidator
 
 __all__ = [
     'Severity',
@@ -27,5 +27,5 @@ __all__ = [
     'BaseValidator',
     'ValidationOrchestrator',
     'ReportGenerator',
-    'QDeveloperValidator'
+    'BedrockValidator'
 ]

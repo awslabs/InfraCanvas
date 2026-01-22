@@ -19,7 +19,7 @@ This directory contains all tests for the InfraCanvas IaC validation system.
 - **`test_orchestrator_cdk.py`** - Orchestrator initialization tests
   - Validator registration
   - Format-specific validator selection
-  - Q Developer integration
+  - Bedrock integration
 
 ### Integration Tests
 
@@ -76,11 +76,11 @@ pytest tests/ --cov=validators --cov=config --cov-report=html
 ## Test Requirements
 
 - **pytest>=7.0.0** - Test framework
-- **boto3>=1.38.0** - AWS SDK (for Q Developer validator)
+- **boto3>=1.38.0** - AWS SDK (for Bedrock validator)
 - **streamlit>=1.45.1** - UI framework
 
 ## Notes
 
-- Integration tests use Q Developer validator (requires AWS credentials and Bedrock access)
+- Integration tests use Bedrock validator (requires AWS credentials and Bedrock access)
 - Some tests may be skipped if optional tools are not installed
 - Test fixtures are minimal examples designed to trigger specific validation scenarios
