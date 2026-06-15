@@ -5,7 +5,7 @@
 
 ## Description
 
-It is a tool that is used to generate CloudFormation/CDK/Terraform code from architecture diagram. It analyses the file asks a set of relevant questions regarding the target infrastructure environment and also regarding the application, then it generates teh IaC code.
+It is a tool that is used to generate CloudFormation/CDK/Terraform code from architecture diagram. It analyses the file asks a set of relevant questions regarding the target infrastructure environment and also regarding the application, then it generates the IaC code.
 
 ## Architecture
 ![Alt text](./infracanvas-architecture.png)
