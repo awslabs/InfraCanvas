@@ -92,7 +92,7 @@ resource "aws_db_instance" "unencrypted_db" {
   instance_class       = "db.t3.micro"
   allocated_storage    = 20
   username             = "admin"
-  password             = "PlainTextPassword123!"  # Hardcoded password
+  # password intentionally omitted; use a secrets manager reference / variable instead of a hardcoded value
   publicly_accessible  = true  # Publicly accessible
   skip_final_snapshot  = true
   # Missing storage_encrypted = true
