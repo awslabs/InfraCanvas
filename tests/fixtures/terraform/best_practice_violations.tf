@@ -40,7 +40,7 @@ resource "aws_db_instance" "important_db" {
   instance_class      = "db.t3.micro"
   allocated_storage   = 100
   username            = "admin"
-  password            = "ChangeMe123!"
+  # password intentionally omitted; use a secrets manager reference / variable instead of a hardcoded value
   storage_encrypted   = true
   skip_final_snapshot = true
   # Missing lifecycle { prevent_destroy = true } for important data

@@ -55,7 +55,7 @@ Resources:
       DBInstanceIdentifier: test-db
       Engine: mysql
       MasterUsername: admin
-      MasterUserPassword: PlainTextPassword123!  # Hardcoded password
+      # MasterUserPassword intentionally omitted; use a dynamic reference / NoEcho parameter instead
       DBInstanceClass: db.t3.micro
       AllocatedStorage: 20
       # Missing StorageEncrypted: true
